@@ -1,5 +1,5 @@
 import { modules } from "./modules.mjs"
-import util, { cookieToJson } from "./util/index.js";
+import util from "./util/index.js";
 import { request, setAnonymousToken } from "./util/request.js";
 
 let obj = {}
@@ -27,7 +27,7 @@ export function initAnonymousToken() {
   const res = obj['register_anonimous']()
   const cookie = res.body.cookie
   if (cookie) {
-    const cookieObj = cookieToJson(cookie)
+    const cookieObj = util.cookieToJson(cookie)
     setAnonymousToken(cookieObj.MUSIC_A)
   } else {
     console.error('no cookie found in response')

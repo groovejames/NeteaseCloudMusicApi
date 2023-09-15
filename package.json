@@ -39,7 +39,7 @@
     "音乐",
     "网易云音乐nodejs"
   ],
-  "main": "main-esm.mjs",
+  "main": "main.js",
   "module": "main-esm.mjs",
   "types": "./interface.d.ts",
   "engines": {

@@ -18,14 +18,28 @@ const aesEncrypt = (buffer, mode, key, iv) => {
   return Buffer.concat([cipher.update(buffer), cipher.final()])
 }
 
+const extractModExpFromRSAKey = (key) => {
+  /*
+  // Extract modulus and exponent from RSA public key. Cannot be used on Deno,
+  // because cryto.createPublicKey() is not available there.
+  const pubKey = crypto.createPublicKey(key).export({ format: 'jwk' })
+  const mod = BigInt('0x' + Buffer.from(pubKey.n, 'base64').toString('hex'))
+  const exp = BigInt('0x' + Buffer.from(pubKey.e, 'base64').toString('hex'))
+  return { mod, exp }
+  */
+  // Return modulus and exponent extracted from the above RSA `publicKey`:
+  return {
+    mod: BigInt(
+      '157794750267131502212476817800345498121872783333389747424011531025366277535262539913701806290766479189477533597854989606803194253978660329941980786072432806427833685472618792592200595694346872951301770580765135349259590167490536138082469680638514416594216629258349130257685001248172188325316586707301643237607',
+    ),
+    exp: BigInt('65537'),
+  }
+}
+
 const rsaEncrypt = (buffer, key) => {
   const base = BigInt('0x' + Buffer.from(buffer).toString('hex'))
-  const pubKey = crypto.createPublicKey(key).export({ format: 'jwk' })
-  const modulus = BigInt('0x' + Buffer.from(pubKey.n, 'base64').toString('hex'))
-  const exponent = BigInt(
-    '0x' + Buffer.from(pubKey.e, 'base64').toString('hex'),
-  )
-  const result = modPow(base, exponent, modulus).toString(16)
+  const { mod, exp } = extractModExpFromRSAKey(key)
+  const result = modPow(base, exp, mod).toString(16)
   return result.padStart(256, '0')
   /* original, using crypto.publicEncrypt() with RSA_NO_PADDING:
   buffer = Buffer.concat([Buffer.alloc(128 - buffer.length), buffer])
