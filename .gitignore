@@ -2,6 +2,7 @@
 node_modules
 *.log
 .idea
+*.iml
 .vscode
 .history
 examples/moddef.json
