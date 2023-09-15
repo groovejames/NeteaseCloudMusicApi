@@ -32,7 +32,7 @@ fs.readdirSync(path.join(__dirname, 'module'))
             await generateConfig()
           }
           // 待优化
-          const request = require('./util/request')
+          const { request } = require('./util/request')
 
           return request(...args)
         },

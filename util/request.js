@@ -8,12 +8,10 @@ const tunnel = require('tunnel')
 const fs = require('fs')
 const path = require('path')
 const tmpPath = require('os').tmpdir()
-const anonymous_token = fs.readFileSync(
-  path.resolve(tmpPath, './anonymous_token'),
-  'utf-8',
-)
 const { URLSearchParams, URL } = require('url')
 // request.debug = true // 开启可看到更详细信息
+
+let anonymous_token = undefined
 
 const chooseUserAgent = (ua = false) => {
   const userAgentList = {
@@ -81,6 +79,12 @@ const createRequest = (method, url, data = {}, options) => {
       if (!options.cookie.MUSIC_U) {
         // 游客
         if (!options.cookie.MUSIC_A) {
+          if (!anonymous_token) {
+            anonymous_token = fs.readFileSync(
+              path.resolve(tmpPath, './anonymous_token'),
+              'utf-8',
+            )
+          }
           options.cookie.MUSIC_A = anonymous_token
         }
       }
@@ -240,4 +244,11 @@ const createRequest = (method, url, data = {}, options) => {
   })
 }
 
-module.exports = createRequest
+const setAnonymousToken = (token) => {
+  anonymous_token = token
+}
+
+module.exports = {
+  request: createRequest,
+  setAnonymousToken,
+}

@@ -1,9 +1,7 @@
 import { modules } from "./modules.mjs"
-import util from './util/index.js'
-import generateConfig from './generateConfig.js'
-import request from './util/request.js'
+import util, { cookieToJson } from "./util/index.js";
+import { request, setAnonymousToken } from "./util/request.js";
 
-let firstRun = true
 let obj = {}
 
 for (const file of modules.reverse()) {
@@ -19,13 +17,20 @@ for (const file of modules.reverse()) {
         cookie: data.cookie ? data.cookie : {},
       },
       async (...args) => {
-        if (firstRun) {
-          firstRun = false
-          await generateConfig()
-        }
         return request(...args)
       },
     )
+  }
+}
+
+export function initAnonymousToken() {
+  const res = obj['register_anonimous']()
+  const cookie = res.body.cookie
+  if (cookie) {
+    const cookieObj = cookieToJson(cookie)
+    setAnonymousToken(cookieObj.MUSIC_A)
+  } else {
+    console.error('no cookie found in response')
   }
 }
 
